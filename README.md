@@ -1,5 +1,11 @@
-## RTL8812AU/21AU and RTL8814AU drivers
+## RTL8812AU/21AU and RTL8814AU Wireless drivers
 Only for use with Linux & Android
+
+
+# THESE DRIVERS IS DEPRECATED.
+# Use the mac80211 drivers over at [https://github.com/lwfinger/rtw88](https://github.com/lwfinger/rtw88)
+
+
 
 [![Monitor mode](https://img.shields.io/badge/monitor%20mode-working-brightgreen.svg)](#)
 [![Frame Injection](https://img.shields.io/badge/frame%20injection-working-brightgreen.svg)](#)
@@ -19,19 +25,19 @@ Only for use with Linux & Android
 
 
 ### Important!
+
 ```
 * Use "ip" and "iw" instead of "ifconfig" and "iwconfig"
      It's described further down, READ THE README!
-
-* v5.3.4 is the stable branch, not this, but this does have
-  better range then branches below + more fixes from Realtek
 ```
 
 ### IPERF3 benchmark
-<b>[Device]</b> Alfa Networks AWUS036ACH<br>
-<b>[Chipset]</b> 88XXau (rtl8812au)<br>
-<b>[Branch]</b> v5.6.4.1<br>
-<b>[Distance]</b> 10m free sight
+
+**[Device]** Alfa Networks AWUS036ACH<br>
+**[Chipset]** 88XXau (rtl8812au)<br>
+**[Branch]** v5.6.4.1<br>
+**[Distance]** 10m free sight
+
 ```
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
 [  5]   0.00-1.00   sec  11.6 MBytes  97.4 Mbits/sec    0   96.2 KBytes
@@ -69,16 +75,22 @@ This driver can be installed using [DKMS]. This is a system which will automatic
 $ sudo apt-get install dkms
 ```
 
+### Download
+```
+$ git clone -b v5.6.4.2 https://github.com/aircrack-ng/rtl8812au.git
+cd rtl*
+```
+
 ### Installation of Driver
 In order to install the driver open a terminal in the directory with the source code and execute the following command:
 ```
-$ sudo ./dkms-install.sh
+$ sudo make dkms_install
 ```
 
 ### Removal of Driver
 In order to remove the driver from your system open a terminal in the directory with the source code and execute the following command:
 ```
-$ sudo ./dkms-remove.sh
+$ sudo make dkms_remove
 ```
 
 ### Make
@@ -87,16 +99,10 @@ For building & installing the driver with 'make' use
 $ make && make install
 ```
 
-### Notes
-Download
-```
-$ git clone -b v5.6.4.2 https://github.com/aircrack-ng/rtl8812au.git
-cd rtl*
-```
 Package / Build dependencies (Kali)
 ```
 $ sudo apt-get update
-$ sudo apt-get install build-essential libelf-dev linux-headers-`uname -r`
+$ sudo apt-get install bc mokutil build-essential libelf-dev linux-headers-`uname -r`
 ```
 #### For Raspberry (RPI)
 
@@ -104,23 +110,32 @@ $ sudo apt-get install build-essential libelf-dev linux-headers-`uname -r`
 $ sudo apt-get install raspberrypi-kernel-headers
 ```
 
-Then run this step to change platform in Makefile, For RPI 1/2/3/ & 0/Zero:
+Then change the platform in Makefile to 32-bit `ARM` architecture (RPi 1/2/3/ & 0/Zero):
 ```
 $ sed -i 's/CONFIG_PLATFORM_I386_PC = y/CONFIG_PLATFORM_I386_PC = n/g' Makefile
 $ sed -i 's/CONFIG_PLATFORM_ARM_RPI = n/CONFIG_PLATFORM_ARM_RPI = y/g' Makefile
 ```
 
-But for RPI 3B+ & 4B you will need to run those below which builds the ARM64 arch driver:
+Or, for `ARM64` (RPI 3B+, 4B and Zero2) you will need to run:
 ```
 $ sed -i 's/CONFIG_PLATFORM_I386_PC = y/CONFIG_PLATFORM_I386_PC = n/g' Makefile
 $ sed -i 's/CONFIG_PLATFORM_ARM64_RPI = n/CONFIG_PLATFORM_ARM64_RPI = y/g' Makefile
 ```
 
-In addition, if you receive an error message about `unrecognized command line option ‘-mgeneral-regs-only’` (i.e., Raspbian Buster), you will need to run the following commands:
+In addition, if you receive an error message about `unrecognized command line option ‘-mgeneral-regs-only’` (i.e., Raspbian Buster), you will need to run the following commands for `ARM` architecture, then retry building and installing:
 ```
-$ sed -i 's/^dkms build/ARCH=arm dkms build/' dkms-install.sh
+$ export ARCH=arm
 $ sed -i 's/^MAKE="/MAKE="ARCH=arm\ /' dkms.conf
 ```
+
+Or, for `ARM64` run the following before re-building:
+
+```
+$ export ARCH=arm64
+$ sed -i 's/^MAKE="/MAKE="ARCH=arm64\ /' dkms.conf
+```
+
+Building the driver may exceed RAM on some RPi's resulting in a `gcc: fatal error: Killed signal terminated program cc1` error.  Swap space can be increased in `/etc/dphys-swapfile` e.g. to `2000` megabytes, followed by `/etc/init.d/dphys-swapfile restart`. Building on swap is very slow, however.
 
 For setting monitor mode
   1. Fix problematic interference in monitor mode.
@@ -173,7 +188,7 @@ $ cat /proc/net/rtl8812au/$(your interface name)/led_ctrl
 0: doesn't switch, 1: switch from usb2.0 to usb 3.0 2: switch from usb3.0 to usb 2.0
 ```sh
 $ rmmod 88XXau
-$ modprobe 88XXau rtw_switch_usb_mode:int (0: no switch 1: switch from usb2 to usb3 2: switch from usb3 to usb2)
+$ modprobe 88XXau rtw_switch_usb_mode=int (0: no switch 1: switch from usb2 to usb3 2: switch from usb3 to usb2)
 ```
 
 ### NetworkManager

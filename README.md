@@ -30,6 +30,7 @@ Only for use with Linux & Android
 * Use "ip" and "iw" instead of "ifconfig" and "iwconfig"
      It's described further down, READ THE README!
 ```
+Note: There is a regression with the TP-Link AC600 and potenically other devices. Currently the work around is to pull from a previous commit. Please see [this comment](https://github.com/aircrack-ng/rtl8812au/issues/1159#issuecomment-2169928358)
 
 ### IPERF3 benchmark
 
@@ -103,6 +104,12 @@ Package / Build dependencies (Kali)
 ```
 $ sudo apt-get update
 $ sudo apt-get install bc mokutil build-essential libelf-dev linux-headers-`uname -r`
+```
+#### For Proxmox Virtual Environment (PVE)
+Package / Build dependencies
+```
+$ sudo apt-get update
+$ sudo apt-get install bc mokutil build-essential libelf-dev pve-headers-`uname -r`
 ```
 #### For Raspberry (RPI)
 

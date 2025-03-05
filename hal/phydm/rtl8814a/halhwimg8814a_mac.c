@@ -100,6 +100,15 @@ u4Byte    driver3 = 0;
 	} else
 		return FALSE;
 }
+static BOOLEAN
+CheckNegative(
+	struct dm_struct    *pDM_Odm,
+	u32  Condition1,
+	u32  Condition2
+)
+{
+	return TRUE;
+}
 
 /******************************************************************************
 *                           MAC_REG.TXT
